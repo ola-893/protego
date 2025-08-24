@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react'
 import { 
-  AlertTriangle, Shield, Eye, Zap, Clock, Users, 
-  MessageSquare, ExternalLink, Sparkles, Wand2
+  AlertTriangle, Shield, Eye, Activity, Clock, Users, 
+  MessageSquare, ExternalLink, Search, Scan,
+  CheckCircle, XCircle, AlertCircle
 } from 'lucide-react'
 
 interface ThreatDetectionPanelProps {
-  onSpellCast: (spell: string) => void
+  onSecurityAction: (action: string) => void
 }
 
 interface Threat {
@@ -18,7 +19,7 @@ interface Threat {
   description: string
   source: string
   timestamp: string
-  spell?: string
+  action?: string
 }
 
 interface SocialAlert {
@@ -30,10 +31,11 @@ interface SocialAlert {
   riskLevel: 'safe' | 'warning' | 'danger'
 }
 
-export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSpellCast }) => {
+export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSecurityAction }) => {
   const [threats, setThreats] = useState<Threat[]>([])
   const [socialAlerts, setSocialAlerts] = useState<SocialAlert[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isScanning, setIsScanning] = useState(false)
+  const [isCasting, setIsCasting] = useState(false)
 
   // Mock data for demonstration - replace with actual SEI MCP server calls
   useEffect(() => {
@@ -46,7 +48,7 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
         description: 'High-risk DeFi contract with suspicious drain functions',
         source: '0x742d35Cc6e8A2B3C456E...a8F9',
         timestamp: '2 min ago',
-        spell: 'Protego Maxima'
+        action: 'block-contract'
       },
       {
         id: '2',
@@ -56,7 +58,7 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
         description: 'Bot network promoting fake yield farming protocol',
         source: 'Telegram: DeFi Wizards',
         timestamp: '5 min ago',
-        spell: 'Revelio'
+        action: 'investigate-social'
       },
       {
         id: '3',
@@ -66,7 +68,7 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
         description: 'Large wallet movements suggesting possible rug pull',
         source: 'On-chain Analysis',
         timestamp: '12 min ago',
-        spell: 'Homenum Revelio'
+        action: 'monitor-wallet'
       }
     ]
 
@@ -95,7 +97,7 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
 
   // Function to fetch threats from SEI MCP server
   const fetchThreats = async () => {
-    setIsLoading(true)
+    setIsScanning(true)
     try {
       // Replace with actual SEI MCP server endpoint
       const response = await fetch('/api/sei-mcp/threats')
@@ -104,37 +106,38 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
     } catch (error) {
       console.error('Failed to fetch threats:', error)
     }
-    setIsLoading(false)
+    setIsScanning(false)
   }
 
-  // Function to fetch social alerts from SEI MCP server
-  const fetchSocialAlerts = async () => {
-    try {
-      const response = await fetch('/api/sei-mcp/social-alerts')
-      const data = await response.json()
-      setSocialAlerts(data.alerts || [])
-    } catch (error) {
-      console.error('Failed to fetch social alerts:', error)
-    }
-  }
-
-  useEffect(() => {
-    // Fetch data every 30 seconds
-    const interval = setInterval(() => {
+  // Harry Potter reference - Homenum Revelio spell
+  const castHomenuRevelio = () => {
+    setIsCasting(true)
+    onSecurityAction('homenum-revelio')
+    
+    // Create magical scanning animation
+    setTimeout(() => {
       fetchThreats()
-      fetchSocialAlerts()
-    }, 30000)
-
-    return () => clearInterval(interval)
-  }, [])
+      setIsCasting(false)
+    }, 2500)
+  }
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'text-red-500 bg-red-500/10 border-red-500/20'
-      case 'high': return 'text-orange-500 bg-orange-500/10 border-orange-500/20'
-      case 'medium': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
-      case 'low': return 'text-blue-500 bg-blue-500/10 border-blue-500/20'
-      default: return 'text-slate-500 bg-slate-500/10 border-slate-500/20'
+      case 'critical': return 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20'
+      case 'high': return 'text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-500/10 dark:border-orange-500/20'
+      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/10 dark:border-yellow-500/20'
+      case 'low': return 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/20'
+      default: return 'text-slate-600 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-500/10 dark:border-slate-500/20'
+    }
+  }
+
+  const getSeverityIcon = (severity: string) => {
+    switch (severity) {
+      case 'critical': return <XCircle className="w-4 h-4 text-red-500" />
+      case 'high': return <AlertTriangle className="w-4 h-4 text-orange-500" />
+      case 'medium': return <AlertCircle className="w-4 h-4 text-yellow-500" />
+      case 'low': return <Eye className="w-4 h-4 text-blue-500" />
+      default: return <CheckCircle className="w-4 h-4 text-slate-500" />
     }
   }
 
@@ -156,48 +159,52 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
     }
   }
 
-  const handleCastProtectionSpell = (threat: Threat) => {
-    onSpellCast(threat.spell || 'Protego')
+  const handleThreatAction = (threat: Threat) => {
+    onSecurityAction(threat.action || 'investigate')
   }
 
   return (
-    <div className="h-full flex flex-col bg-slate-900/30 backdrop-blur-sm">
+    <div className="h-full flex flex-col bg-white/50 dark:bg-slate-900/30 backdrop-blur-sm">
       {/* Header */}
-      <div className="p-6 border-b border-slate-800/50">
+      <div className="p-6 border-b border-slate-200 dark:border-slate-800/50">
         <div className="flex items-center gap-3 mb-4">
           <div className="relative">
-            <Shield className="w-6 h-6 text-blue-400" />
-            <Sparkles className="w-3 h-3 text-yellow-400 absolute -top-1 -right-1 animate-ping" />
+            <Shield className="w-6 h-6 text-red-600 dark:text-red-400" />
+            {isCasting && (
+              <div className="absolute inset-0 border-2 border-blue-400 rounded-full animate-ping" />
+            )}
           </div>
-          <h2 className="text-lg font-semibold text-white">Threat Detection</h2>
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-white">Threat Detection</h2>
         </div>
 
         <button
-          onClick={() => {
-            fetchThreats()
-            onSpellCast('Revelio Totalum')
-          }}
-          disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 px-4 py-2 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all"
+          onClick={castHomenuRevelio}
+          disabled={isScanning || isCasting}
+          className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 disabled:opacity-50 px-4 py-2 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all relative overflow-hidden group"
         >
-          {isLoading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              Scanning...
-            </>
-          ) : (
-            <>
-              <Eye className="w-4 h-4" />
-              Cast Revelio
-            </>
+          {isCasting && (
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-blue-400/20 animate-pulse" />
           )}
+          <div className="relative flex items-center gap-2">
+            {isScanning || isCasting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                {isCasting ? 'Casting Homenum Revelio...' : 'Scanning...'}
+              </>
+            ) : (
+              <>
+                <Scan className="w-4 h-4" />
+                Cast Homenum Revelio
+              </>
+            )}
+          </div>
         </button>
       </div>
 
       {/* Threat Feed */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
-          <h3 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" />
             Active Threats ({threats.length})
           </h3>
@@ -206,32 +213,35 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
             {threats.map((threat) => (
               <div
                 key={threat.id}
-                className={`p-3 rounded-lg border backdrop-blur-sm ${getSeverityColor(threat.severity)} relative overflow-hidden group`}
+                className={`p-4 rounded-lg border backdrop-blur-sm ${getSeverityColor(threat.severity)} relative overflow-hidden group transition-all hover:shadow-md`}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 
                 <div className="relative">
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium text-sm">{threat.title}</h4>
-                    <span className={`text-xs px-2 py-1 rounded ${getSeverityColor(threat.severity)} border`}>
+                    <div className="flex items-center gap-2">
+                      {getSeverityIcon(threat.severity)}
+                      <h4 className="font-semibold text-sm">{threat.title}</h4>
+                    </div>
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium border ${getSeverityColor(threat.severity)}`}>
                       {threat.severity.toUpperCase()}
                     </span>
                   </div>
                   
-                  <p className="text-xs text-slate-400 mb-2">{threat.description}</p>
+                  <p className="text-sm opacity-80 mb-3">{threat.description}</p>
                   
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <div className="flex items-center gap-2 text-xs opacity-70">
                       <Clock className="w-3 h-3" />
                       {threat.timestamp}
                     </div>
                     
                     <button
-                      onClick={() => handleCastProtectionSpell(threat)}
-                      className="text-xs bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 px-2 py-1 rounded flex items-center gap-1 transition-all"
+                      onClick={() => handleThreatAction(threat)}
+                      className="bg-white/20 dark:bg-slate-700/50 hover:bg-white/30 dark:hover:bg-slate-700/70 px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all border border-white/20 dark:border-slate-600/50"
                     >
-                      <Wand2 className="w-3 h-3" />
-                      Cast {threat.spell}
+                      <Activity className="w-3 h-3" />
+                      Investigate
                     </button>
                   </div>
                 </div>
@@ -241,8 +251,8 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
         </div>
 
         {/* Social Alerts */}
-        <div className="p-4 border-t border-slate-800/50">
-          <h3 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800/50">
+          <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2">
             <MessageSquare className="w-4 h-4" />
             Social Intelligence ({socialAlerts.length})
           </h3>
@@ -251,18 +261,18 @@ export const ThreatDetectionPanel: React.FC<ThreatDetectionPanelProps> = ({ onSp
             {socialAlerts.map((alert) => (
               <div
                 key={alert.id}
-                className="p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-slate-600/50 transition-colors"
+                className="p-3 rounded-lg bg-slate-100/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600/50 transition-colors"
               >
                 <div className="flex items-start gap-2 mb-1">
                   <span className="text-lg">{getPlatformIcon(alert.platform)}</span>
                   <div className="flex-1">
-                    <p className="text-xs text-slate-300">{alert.message}</p>
+                    <p className="text-xs text-slate-700 dark:text-slate-300">{alert.message}</p>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center gap-2 text-xs text-slate-500">
                         <Users className="w-3 h-3" />
                         {alert.mentions} mentions
                       </div>
-                      <div className={`text-xs ${getRiskColor(alert.riskLevel)}`}>
+                      <div className={`text-xs font-medium ${getRiskColor(alert.riskLevel)}`}>
                         {alert.riskLevel.toUpperCase()}
                       </div>
                     </div>

@@ -2,15 +2,18 @@
 
 import { ArrowUpIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { Loader2, Sparkles, Wand2, Shield } from "lucide-react";
+import { Loader2, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useContext, useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { WalletContext } from '@/components/dashboard/MagicalChatWrapper'
+
 
 import { Button } from "@/components/button";
 import { ExamplePrompts } from "@/components/example-prompts";
 
-export const LandingTextarea = () => {
+export const LandingTextarea = () => {  
+  const { walletAddress } = useContext(WalletContext);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userEntity, setUserEntity] = useState<string | null>(null);
@@ -49,7 +52,7 @@ export const LandingTextarea = () => {
       try {
         setIsLoading(true);
         console.log(
-          `[Landing] Creating new magical session with message: "${initialMessage}"`,
+          `[Landing] Creating new secure session with message: "${initialMessage}"`,
         );
 
         const response = await fetch("/api/chat-session/create", {
@@ -64,18 +67,18 @@ export const LandingTextarea = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to create magical session");
+          throw new Error("Failed to create secure session");
         }
 
         const result = await response.json();
         const sessionId = result.data.sessionId;
 
-        console.log(`[Landing] Created new magical session: ${sessionId}`);
+        console.log(`[Landing] Created new secure session: ${sessionId}`);
 
         // Navigate to the new session
         push(`/chat/${sessionId}`);
       } catch (error) {
-        console.error("[Landing] Failed to create new magical session:", error);
+        console.error("[Landing] Failed to create new secure session:", error);
         setIsLoading(false);
       }
     },
@@ -120,9 +123,8 @@ export const LandingTextarea = () => {
           "before:has-[[data-disabled]]:bg-slate-950/5 before:has-[[data-disabled]]:shadow-none",
         ])}
       >
-        {/* Magical border glow effect */}
         <div className={clsx([
-          "absolute -inset-1 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-emerald-500/30 rounded-xl blur opacity-0 transition-opacity duration-500",
+          "absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-cyan-500/30 to-blue-500/30 rounded-xl blur opacity-0 transition-opacity duration-500",
           isFocused && "opacity-100"
         ])} />
         
@@ -134,14 +136,12 @@ export const LandingTextarea = () => {
             "focus:outline-none transition-all duration-300",
             "hover:bg-slate-900/90",
             isFocused 
-              ? "border-blue-500/60 bg-slate-900/95" 
+              ? "border-cyan-500/60 bg-slate-900/95" 
               : "border-slate-700/50 hover:border-slate-600/60",
           ])}
         >
-          {/* Magical sparkles inside input */}
           <div className="absolute top-3 left-3 flex items-center gap-1 pointer-events-none">
-            <Shield className="w-4 h-4 text-blue-400 opacity-60" />
-            <Sparkles className="w-3 h-3 text-yellow-400 opacity-40 animate-pulse" />
+            <Zap className="w-4 h-4 text-cyan-400 opacity-60" />
           </div>
 
           <form
@@ -153,12 +153,12 @@ export const LandingTextarea = () => {
           >
             <div className="relative min-h-[48px] w-full">
               <textarea
-                aria-label="Cast your magical query"
+                aria-label="Enter your query"
                 value={input}
                 onChange={handleInputChange}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="✨ What magical knowledge do you seek? Ask about spells, potions, or enchantments..."
+                placeholder="⚡ Run a security scan, find an optimal yield strategy, or get a portfolio analysis..."
                 className={clsx([
                   "size-full bg-transparent",
                   "relative block size-full appearance-none",
@@ -168,7 +168,7 @@ export const LandingTextarea = () => {
                   "scrollbar scrollbar-thumb-slate-600 scrollbar-thumb-rounded-full scrollbar-w-[4px]",
                   "text-base/6 sm:text-sm/6",
                   "border-none outline-none focus:outline-none focus:ring-0 focus:ring-offset-0",
-                  "p-0 pl-12 pr-4 pt-4", // Extra left padding for icons
+                  "p-0 pl-12 pr-4 pt-4",
                   "field-sizing-content resize-none",
                   "scrollbar-thin scrollbar-thumb-rounded-md",
                   "max-h-[48vh]",
@@ -184,23 +184,22 @@ export const LandingTextarea = () => {
             <div className="flex w-full items-center justify-between px-3 pb-3">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 text-xs text-slate-500">
-                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                  <span>Magical wards active</span>
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                  <span>Secure connection established</span>
                 </div>
               </div>
               <Button
                 type="submit"
-                color={(input ? "blue" : "dark") as "blue" | "dark"}
+                color={(input ? "teal" : "dark") as "teal" | "dark"}
                 disabled={!input || !userEntity || isLoading}
-                aria-label="Cast spell"
+                aria-label="Submit query"
                 className={clsx([
                   "size-9 relative overflow-hidden group",
-                  input && !isLoading && "hover:shadow-lg hover:shadow-blue-500/25",
+                  input && !isLoading && "hover:shadow-lg hover:shadow-cyan-500/25",
                 ])}
               >
-                {/* Button magical glow */}
                 {input && !isLoading && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md" />
                 )}
                 
                 <div className="relative z-10">
@@ -210,8 +209,8 @@ export const LandingTextarea = () => {
                     </div>
                   ) : input ? (
                     <div className="flex items-center gap-1">
-                      <Wand2 className="h-3 w-3" />
-                      <Sparkles className="h-2 w-2 opacity-60" />
+                      <span className="font-semibold text-xs transition-opacity duration-200 group-hover:opacity-0">Sectumsempra</span>
+                      <Zap className="h-3 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100 absolute" />
                     </div>
                   ) : (
                     <ArrowUpIcon className="!h-3 !w-3 !shrink-0" />
@@ -223,9 +222,8 @@ export const LandingTextarea = () => {
         </div>
       </span>
 
-      {/* Magical Example Prompts */}
       <div className="relative">
-        <ExamplePrompts onPromptSelect={handlePromptSelect} />
+        <ExamplePrompts onPromptSelect={handlePromptSelect} walletAddress={walletAddress} />
       </div>
     </div>
   );

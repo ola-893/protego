@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "AI Eliza",
+  name: "Protego",
   url:
     process.env.NEXT_PUBLIC_APP_URL ||
     "https://ai.eliza.how/" ||
@@ -12,13 +12,13 @@ export const siteConfig = {
     {
       rel: "icon",
       type: "image/png",
-      url: "/eliza-black.png",
+      url: "/logo.svg",
       media: "(prefers-color-scheme: light)",
     },
     {
       rel: "icon",
       type: "image/png",
-      url: "/favicon.ico",
+      url: "/logo.svg",
       media: "(prefers-color-scheme: dark)",
     },
   ],

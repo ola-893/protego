@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
+import clsx from "clsx";
+import { Wand, Zap, ShieldCheck } from "lucide-react";
 import { ChatMessage } from "@/components/chat-message";
 import { USER_NAME } from "@/constants";
 import { Citation } from "@/types/chat";

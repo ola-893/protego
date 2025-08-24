@@ -3,11 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import clsx from "clsx";
+import { ChevronDown, ChevronUp, Sparkles, Wand2 } from "lucide-react";
 
 import { ChatMessages } from "@/components/chat-messages";
 import { TextareaWithActions } from "@/components/textarea-with-actions";
 import { ChatSessions } from "@/components/chat-sessions";
-import { Button, styles } from "@/components/button";
+import { Button } from "@/components/button";
 import { USER_NAME, CHAT_SOURCE } from "@/constants";
 import SocketIOManager, {
   ControlMessageData,
@@ -19,7 +21,7 @@ import { getChannelMessages, getRoomMemories, pingServer } from "@/lib/api-clien
 // Simple spinner component
 const LoadingSpinner = () => (
   <svg
-    className="animate-spin h-4 w-4 text-zinc-600 dark:text-zinc-400"
+    className="animate-spin h-4 w-4 text-cyan-400"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
@@ -49,7 +51,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
 
   // --- Environment Configuration ---
   const agentId = process.env.NEXT_PUBLIC_AGENT_ID;
-  const serverId = "00000000-0000-0000-0000-000000000000"; // Default server ID from ElizaOS
+  const serverId = "00000000-0000-0000-0000-000000000000";
 
   // --- User Entity ---
   const [userEntity, setUserEntity] = useState<string | null>(null);
@@ -76,6 +78,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
   >("checking");
   const [showSessionSwitcher, setShowSessionSwitcher] =
     useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // --- Refs ---
   const initStartedRef = useRef(false);
@@ -96,6 +99,14 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
   };
+
+  // Auto-scroll to bottom of messages
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isAgentThinking]);
+
 
   // Initialize user entity on client side only to avoid hydration mismatch
   useEffect(() => {
@@ -511,6 +522,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
             sendMessage(sessionData.metadata.initialMessage);
           }, 1000);
         }
+        
       })
       .finally(() => {
         setIsLoadingHistory(false);
@@ -540,7 +552,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
   const renderConnectionStatus = () => {
     if (serverStatus === "checking") {
       return (
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
           <LoadingSpinner />
           Checking server connection...
         </div>
@@ -577,7 +589,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
             : "Connecting (agent setup failed)...";
 
       return (
-        <div className="flex items-center gap-2 text-sm text-blue-600 mb-4">
+        <div className="flex items-center gap-2 text-sm text-blue-500 mb-4">
           <LoadingSpinner />
           {statusText}
         </div>
@@ -586,12 +598,12 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
 
     if (connectionStatus === "error") {
       return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span className="text-red-700 font-medium">Connection Error</span>
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-red-700 dark:text-red-300 font-medium">Connection Error</span>
           </div>
-          <p className="text-red-600 text-sm mt-1">
+          <p className="text-red-600 dark:text-red-400 text-sm mt-1">
             Failed to connect to the agent. Please try refreshing the page.
           </p>
         </div>
@@ -600,8 +612,8 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
 
     if (connectionStatus === "connected") {
       return (
-        <div className="flex items-center gap-2 text-sm text-green-600 mb-4">
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+        <div className="flex items-center gap-2 text-sm text-emerald-500 mb-4">
+          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
           Connected to Agent
         </div>
       );
@@ -614,13 +626,15 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
   if (!agentId) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center p-6">
-          <h2 className="text-xl font-semibold mb-2">Configuration Error</h2>
-          <p className="text-gray-600 mb-4">
-            NEXT_PUBLIC_AGENT_ID is not configured in environment variables.
+        <div className="text-center p-6 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+          <h2 className="text-xl font-semibold mb-2 text-slate-800 dark:text-slate-200">
+            Configuration Error
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            `NEXT_PUBLIC_AGENT_ID` is not configured in environment variables.
           </p>
-          <p className="text-sm text-gray-500">
-            Please check your .env file and ensure NEXT_PUBLIC_AGENT_ID is set.
+          <p className="text-sm text-slate-500 dark:text-slate-500">
+            Please check your `.env` file and ensure `NEXT_PUBLIC_AGENT_ID` is set.
           </p>
         </div>
       </div>
@@ -628,17 +642,17 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
   }
 
   return (
-    <div className="min-h-screen w-full max-w-4xl mx-auto flex flex-col mt-20">
+    <div className="min-h-screen w-full flex flex-col pt-16 bg-slate-950/95 dark:bg-slate-950/95">
       {/* Header Section - Top/Middle */}
-      <div className="flex-1 flex flex-col px-4 pb-32">
+      <div className="flex-1 flex flex-col px-4 pb-32 max-w-4xl mx-auto w-full">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <div className="flex-1">
-              <h1 className="text-2xl font-bold">
-                {sessionData?.title || "Chat with ElizaOS Agent"}
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                {sessionData?.title || "Secure DeFi Analysis"}
               </h1>
               {sessionData && (
-                <div className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">
+                <div className="text-slate-400 text-sm mt-1">
                   {sessionData.messageCount} messages • Last activity{" "}
                   {formatTimeAgo(sessionData.lastActivity)}
                 </div>
@@ -647,8 +661,9 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => createNewSession()}
-                color={"blue"}
+                color={"teal"}
               >
+                <Sparkles className="h-4 w-4" />
                 New Chat
               </Button>
               {sessionData && (
@@ -656,7 +671,8 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
                   onClick={() => setShowSessionSwitcher(!showSessionSwitcher)}
                   plain        
                 >
-                  {showSessionSwitcher ? "Hide Sessions" : "Switch Chat"}
+                  {showSessionSwitcher ? "Hide Sessions" : "Switch Session"}
+                  {showSessionSwitcher ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
               )}
             </div>
@@ -668,7 +684,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
 
         {/* Session Switcher */}
         {showSessionSwitcher && userEntity && (
-          <div className="mb-6 bg-zinc-50 dark:bg-zinc-900 rounded-lg p-4 border border-zinc-950/10 dark:border-white/10">
+          <div className="mb-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-4">
             <ChatSessions
               userId={userEntity}
               currentSessionId={sessionId}
@@ -678,13 +694,13 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
         )}
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 scrollbar-thumb-rounded-full">
           {/* Only show history loading if we're connected and actually loading history */}
           {connectionStatus === "connected" && isLoadingHistory ? (
             <div className="flex items-center justify-center h-32">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-slate-400">
                 <LoadingSpinner />
-                <span className="text-gray-600">
+                <span>
                   Loading conversation history...
                 </span>
               </div>
@@ -701,18 +717,20 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
                 }}
               />
               {isAgentThinking && (
-                <div className="flex items-center gap-2 py-4 text-gray-600">
+                <div className="flex items-center gap-2 py-4 text-slate-400">
                   <LoadingSpinner />
                   <span>Agent is thinking...</span>
                 </div>
               )}
+              {/* Ref to auto-scroll messages */}
+              <div ref={messagesEndRef} />
             </>
           )}
         </div>
       </div>
 
       {/* Input Area - Fixed at Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-black z-10">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-slate-950/95 dark:bg-slate-950/95 z-10">
         <div className="w-full max-w-4xl mx-auto">
           <TextareaWithActions
             input={input}
@@ -725,8 +743,8 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
             }
             placeholder={
               connectionStatus === "connected"
-                ? "Type your message..."
-                : "Connecting..."
+                ? "⚡ Run a security scan, find an optimal yield strategy, or get a portfolio analysis..."
+                : "⚡ Connecting to agent..."
             }
           />
         </div>
@@ -734,7 +752,7 @@ export const Chat = ({ sessionId: propSessionId }: ChatProps = {}) => {
 
       {/* Debug Info (Only when NEXT_PUBLIC_DEBUG is enabled) */}
       {process.env.NEXT_PUBLIC_DEBUG === "true" && (
-        <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
+        <div className="mt-4 p-2 bg-slate-800 rounded text-xs text-slate-400 max-w-4xl mx-auto">
           <div>Agent ID: {agentId}</div>
           <div>Session ID: {sessionId}</div>
           <div>Channel ID: {channelId}</div>

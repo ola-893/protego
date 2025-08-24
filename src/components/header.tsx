@@ -76,51 +76,6 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-10 bg-white dark:bg-black">
-      <nav className="px-4 lg:px-6 w-full" aria-label="Global">
-        <div className="flex items-center justify-between py-4">
-          <div className="flex">
-            <Link href="/" className="-m-1.5 p-1.5">
-              <Logo width={32} height={32} />
-            </Link>
-          </div>
-
-          <div className="gap-x-4 flex ml-auto items-center">
-            <NavLinks />
-          </div>
-        </div>
-      </nav>
-
-      <Dialog
-        open={mobileMenuOpen}
-        onClose={setMobileMenuOpen}
-        className="lg:hidden"
-        variant="slideout"
-      >
-        <div className="px-6 py-6 h-full">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="-m-1.5 p-1.5"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Logo width={32} height={32} />
-            </Link>
-            <button
-              type="button"
-              className="-m-2.5 rounded-md p-2.5 text-zinc-700 dark:text-zinc-400"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="sr-only">Close menu</span>
-              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="mt-6 flow-root">
-            <div className="space-y-2 py-6">
-              <NavLinks mobile />
-            </div>
-          </div>
-        </div>
-      </Dialog>
     </header>
   );
 }

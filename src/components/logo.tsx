@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 
-import logo from "@/components/logo.png";
+import logo from "@/components/logo.svg";
 
 interface LogoProps {
   width?: number;
@@ -14,7 +14,7 @@ export function Logo({ width = 120, height = 32, className = "" }: LogoProps) {
     <div className={clsx(["select-none", className])}>
       <Image
         src={logo}
-        alt="Eliza Logo"
+        alt="sheild"
         width={width}
         height={height}
         priority

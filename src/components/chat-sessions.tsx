@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, MessageSquare, Clock, ArrowRight, ScrollText, Wand } from "lucide-react";
+import { Clock, ArrowRight, ScrollText, ShieldCheck, FileText } from "lucide-react";
 
-// Magical spinner component
-const MagicalSpinner = () => (
+// Trustworthy spinner component
+const SecuritySpinner = () => (
   <div className="relative">
-    <div className="w-6 h-6 border-2 border-slate-600 border-t-blue-400 rounded-full animate-spin" />
-    <Sparkles className="absolute inset-0 w-6 h-6 text-yellow-400 animate-pulse" />
+    <div className="w-6 h-6 border-2 border-slate-600 border-t-green-400 rounded-full animate-spin" />
+    <ShieldCheck className="absolute inset-0 w-6 h-6 text-green-400 animate-pulse" />
   </div>
 );
 
@@ -52,14 +52,14 @@ export const ChatSessions = ({
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch magical consultations");
+          throw new Error(data.error || "Failed to fetch previous analyses");
         }
 
         setSessions(data.data?.sessions || []);
       } catch (err) {
-        console.error("[MagicalSessions] Error:", err);
+        console.error("[SecureSessions] Error:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load magical consultations",
+          err instanceof Error ? err.message : "Failed to load previous analyses",
         );
       } finally {
         setLoading(false);
@@ -70,7 +70,7 @@ export const ChatSessions = ({
   }, [userId]);
 
   const handleSessionClick = (session: ChatSession) => {
-    // Navigate to the magical session
+    // Navigate to the secure session
     router.push(`/chat/${session.id}`);
   };
 
@@ -97,10 +97,10 @@ export const ChatSessions = ({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-4">
-          <MagicalSpinner />
+          <SecuritySpinner />
           <span className="text-slate-400 animate-pulse flex items-center gap-2">
-            <Wand className="w-4 h-4" />
-            Consulting the Wand ball...
+            <ShieldCheck className="w-4 h-4" />
+            Scanning previous data...
           </span>
         </div>
       </div>
@@ -112,8 +112,8 @@ export const ChatSessions = ({
       <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 backdrop-blur-sm relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-orange-500/5" />
         <div className="relative z-10 text-center">
-          <div className="text-red-400 text-2xl mb-2">🔮💥</div>
-          <p className="text-red-300 font-medium">Magical interference detected!</p>
+          <div className="text-red-400 text-2xl mb-2">🚨⚠️</div>
+          <p className="text-red-300 font-medium">Data connection error!</p>
           <p className="text-red-400/80 text-sm mt-1">{error}</p>
         </div>
       </div>
@@ -124,18 +124,17 @@ export const ChatSessions = ({
     return (
       <div className="text-center py-12">
         <div className="relative inline-block mb-4">
-          <ScrollText className="w-16 h-16 text-slate-600 mx-auto" />
-          <Sparkles className="w-6 h-6 text-yellow-400 absolute -top-1 -right-1 animate-pulse" />
+          <FileText className="w-16 h-16 text-slate-600 mx-auto" />
         </div>
         <p className="text-slate-400 text-lg font-medium mb-2">
           {showSwitcher
-            ? "No other magical consultations found"
-            : "Your spell book is empty"}
+            ? "No other analysis sessions found"
+            : "Your history is clear"}
         </p>
         <p className="text-slate-500 text-sm">
           {showSwitcher 
-            ? "Cast your first spell above to begin" 
-            : "Start by asking about magical protections or yield enchantments"}
+            ? "Start a new analysis above to begin" 
+            : "Start by analyzing a protocol or checking a contract for vulnerabilities."}
         </p>
       </div>
     );
@@ -149,8 +148,8 @@ export const ChatSessions = ({
     return (
       <div className="text-center py-6">
         <div className="text-slate-500 text-sm flex items-center justify-center gap-2">
-          <Wand className="w-4 h-4" />
-          No other magical consultations found
+          <ShieldCheck className="w-4 h-4" />
+          No other analysis sessions found
         </div>
       </div>
     );
@@ -160,8 +159,8 @@ export const ChatSessions = ({
     <div className="space-y-4">
       {showSwitcher && (
         <h3 className="text-lg font-bold text-slate-300 mb-4 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-yellow-400" />
-          Switch to another consultation:
+          <ShieldCheck className="w-5 h-5 text-green-400" />
+          Switch to another session:
         </h3>
       )}
 
@@ -170,21 +169,16 @@ export const ChatSessions = ({
           <div
             key={session.id}
             onClick={() => handleSessionClick(session)}
-            className="group cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 border border-slate-700/50 hover:border-blue-500/40 rounded-xl p-4 transition-all duration-300 hover:transform hover:scale-[1.02] relative overflow-hidden backdrop-blur-sm"
+            className="group cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 border border-slate-700/50 hover:border-teal-500/40 rounded-xl p-4 transition-all duration-300 hover:transform hover:scale-[1.02] relative overflow-hidden backdrop-blur-sm"
           >
-            {/* Magical hover effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Subtle hover effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-teal-500/5 via-cyan-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
-            {/* Floating sparkles on hover */}
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
-            </div>
-
             <div className="flex items-start justify-between gap-4 relative z-10">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <MessageSquare className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <h4 className="font-semibold text-slate-200 group-hover:text-blue-300 transition-colors text-sm line-clamp-1">
+                  <FileText className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                  <h4 className="font-semibold text-slate-200 group-hover:text-teal-300 transition-colors text-sm line-clamp-1">
                     {session.title}
                   </h4>
                 </div>
@@ -193,7 +187,7 @@ export const ChatSessions = ({
                   <p className="text-slate-400 text-xs mt-1 line-clamp-2 pl-6">
                     {session.isFromAgent && (
                       <span className="inline-flex items-center gap-1 mr-1">
-                        <Wand className="w-3 h-3 text-purple-400" />
+                        <ShieldCheck className="w-3 h-3 text-cyan-400" />
                       </span>
                     )}
                     {session.preview}
@@ -204,7 +198,7 @@ export const ChatSessions = ({
                   <div className="flex items-center gap-1">
                     <ScrollText className="w-3 h-3" />
                     <span>
-                      {session.messageCount} spell{session.messageCount !== 1 ? "s" : ""}
+                      {session.messageCount} message{session.messageCount !== 1 ? "s" : ""}
                     </span>
                   </div>
                   <span>•</span>
@@ -216,15 +210,10 @@ export const ChatSessions = ({
               </div>
               
               <div className="flex-shrink-0 mt-1">
-                <div className="p-2 rounded-lg bg-slate-800/50 group-hover:bg-blue-500/20 transition-all duration-300">
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all duration-300" />
+                <div className="p-2 rounded-lg bg-slate-800/50 group-hover:bg-teal-500/20 transition-all duration-300">
+                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all duration-300" />
                 </div>
               </div>
-            </div>
-
-            {/* Magic number indicator */}
-            <div className="absolute top-2 left-2 w-6 h-6 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center text-xs font-bold text-blue-400 border border-blue-500/30">
-              {index + 1}
             </div>
           </div>
         ))}
