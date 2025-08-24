@@ -12,11 +12,8 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-interface CompleteLandingPageProps {
-  onEnterDashboard: () => void
-}
 
-export const CompleteLandingPage: React.FC<CompleteLandingPageProps> = ({ onEnterDashboard }) => {
+function CompleteLandingPage(){
   const [isDark, setIsDark] = useState(true)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [threatCount, setThreatCount] = useState(47832)
@@ -28,8 +25,6 @@ export const CompleteLandingPage: React.FC<CompleteLandingPageProps> = ({ onEnte
   const spells = ['Protection', 'Protego', 'Salvio Hexia', 'Fianto Duri', 'Repello Inimicum']
   
     const handleEnterDashboard = () => {
-    // Call the prop function (for any custom logic)
-    // onEnterDashboard();
     
     // Navigate to dashboard
     router.push('/dashboard');
@@ -162,7 +157,7 @@ export const CompleteLandingPage: React.FC<CompleteLandingPageProps> = ({ onEnte
       </div>
       
       <blockquote className={`${isDark ? 'text-slate-300' : 'text-slate-700'} italic mb-4 text-sm leading-relaxed`}>
-        "{quote}"
+        &ldquo;{quote}&rdquo;
       </blockquote>
 
       <div className="flex items-center justify-between pt-4 border-t border-slate-200/10">
@@ -576,7 +571,7 @@ export const CompleteLandingPage: React.FC<CompleteLandingPageProps> = ({ onEnte
               </div>
               
               <button 
-                onClick={onEnterDashboard}
+                onClick={handleEnterDashboard}
                 className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Shield className="w-5 h-5" />
@@ -647,7 +642,7 @@ export const CompleteLandingPage: React.FC<CompleteLandingPageProps> = ({ onEnte
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <button 
-              onClick={onEnterDashboard}
+              onClick={handleEnterDashboard}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-8 py-4 rounded-xl font-semibold text-lg text-white transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
             >
               <Shield className="w-5 h-5" />

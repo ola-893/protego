@@ -8,7 +8,8 @@ import {
 } from 'lucide-react'
 
 interface ThreatDetectionPanelProps {
-  onSecurityAction: (action: string) => void
+  onSecurityAction?: (action: string) => void;
+    onSpellCast?: (actionName: string) => void;
 }
 
 interface Threat {

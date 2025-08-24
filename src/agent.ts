@@ -2,8 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import type { Character } from "@elizaos/core";
-import { ragPlugin } from "@/plugin-rag";
-import { groqPlugin } from "@/plugin-groq";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 /**
@@ -103,7 +101,7 @@ const character: Partial<Character> = {
 
 const devRel = {
   character,
-  plugins: [groqPlugin, openaiPlugin, ragPlugin],
+  plugins: [openaiPlugin],
 };
 
 export const project = {

@@ -24,6 +24,34 @@ const SEI_TESTNET_CONFIG = {
   blockExplorer: 'https://seitrace.com'
 }
 
+
+interface EthereumProvider {
+  request: (args: { method: string; params?: any[] }) => Promise<any>;
+  on?: (event: string, callback: (...args: any[]) => void) => void;
+  removeListener?: (event: string, callback: (...args: any[]) => void) => void;
+  isMetaMask?: boolean;
+}
+
+
+
+
+declare global {
+  interface Window {
+    ethereum?: {
+      request: (args: { method: string; params?: any[] }) => Promise<any>;
+      isMetaMask?: boolean;
+      selectedAddress?: string;
+      chainId?: string;
+      // Add event listener methods
+      on: (event: string, callback: (...args: any[]) => void) => void;
+      removeListener: (event: string, callback: (...args: any[]) => void) => void;
+      // Add other methods you might use
+      enable?: () => Promise<string[]>;
+      send?: (method: string, params?: any[]) => Promise<any>;
+    };
+  }
+}
+
 // --- Enhanced ABIs with error handling ---
 const MOCK_USDC_ABI = [
   "function approve(address spender, uint256 amount) external returns (bool)",
@@ -41,8 +69,9 @@ const PROTEGO_YIELD_VAULT_CORE_ABI = [
 ];
 
 interface YieldOptimizationSidebarProps {
-  onOptimize: (strategy: string) => void
-  onEmergencyWithdrawal: () => void
+  onOptimize?: (strategy: string) => void
+  onEmergencyWithdrawal?: () => void
+   onSpellCast?: (actionName: string) => void; // Add this
 }
 
 interface StakingOpportunity {
@@ -309,8 +338,7 @@ export const YieldOptimizationSidebar: React.FC<YieldOptimizationSidebarProps> =
       console.log('Accounts received:', accounts);
       
       console.log('Creating Web3 provider...');
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-      
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum as EthereumProvider);      
       console.log('Getting network info...');
       const network = await web3Provider.getNetwork();
       console.log('Network details:', {
@@ -336,7 +364,7 @@ export const YieldOptimizationSidebar: React.FC<YieldOptimizationSidebarProps> =
         // Refresh provider after network switch
         console.log('Waiting for network switch...');
         await new Promise(resolve => setTimeout(resolve, 2000));
-        const newProvider = new ethers.providers.Web3Provider(window.ethereum);
+        const newProvider = new ethers.providers.Web3Provider(window.ethereum as EthereumProvider);      
         const newNetwork = await newProvider.getNetwork();
         console.log('New network after switch:', newNetwork);
         setProvider(newProvider);

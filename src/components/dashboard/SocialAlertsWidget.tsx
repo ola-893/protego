@@ -8,7 +8,8 @@ import {
 } from 'lucide-react'
 
 interface SocialAlertsWidgetProps {
-  onAnalyze: (type: string) => void
+  onAnalyze?: (type: string) => void
+  onSpellCast?: (actionName: string) => void;
 }
 
 interface SocialAlert {
@@ -245,7 +246,7 @@ export const SocialAlertsWidget: React.FC<SocialAlertsWidgetProps> = ({ onAnalyz
               ) : (
                 <>
                   <Eye className="w-4 h-4" />
-                  Marauder's Map
+                  Marauder&apos;s Map
                 </>
               )}
             </button>
